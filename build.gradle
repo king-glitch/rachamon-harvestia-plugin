@@ -1,0 +1,37 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.9.0'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+group = 'dev.rachamon'
+version = '0.0.1-SNAPSHOT'
+
+apply plugin: 'java'
+compileJava { options.encoding = "UTF-8" }
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    compileOnly 'org.spongepowered:spongeapi:7.4.0'
+    implementation 'com.github.king-glitch:sponge-plugin-api:55d9a31dfc'
+    annotationProcessor 'org.spongepowered:spongeapi:7.4.0'
+}
+
+sponge.plugin.id = 'rachamonharvestia'
+
+def targetJavaVersion = 8
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
