@@ -11,7 +11,14 @@ import dev.rachamon.rachamonharvestia.managers.RachamonHarvestiaPluginManager;
 import dev.rachamon.rachamonharvestia.managers.RachamonPluginManager;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -24,29 +31,22 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     private static boolean isInitialized = false;
     private Components components;
     private RachamonPluginManager pluginManager;
+    private LoggerUtil logger;
 
     @Inject
     private Game game;
-
     @Inject
     private PluginContainer container;
-
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path directory;
-
     @Inject
     private GuiceObjectMapperFactory factory;
-
     @Inject
-    private Injector harvestiaInjector;
-
-
-    /**
-     * The Sponge injector.
-     */
+    private Injector injector;
     @Inject
-    Injector spongeInjector;
+    private Injector pluginInjector;
+
 
     public RachamonHarvestia() {
         super("RachamonHarvestia", true);
@@ -56,14 +56,60 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return RachamonHarvestia.instance;
     }
 
+    /**
+     * On pre initialize.
+     *
+     * @param event the event
+     */
+    @Listener
+    public void onPreInitialize(GamePreInitializationEvent event) {
+        instance = this;
+        this.pluginManager = new RachamonPluginManager();
+        this.setLogger(new LoggerUtil(Sponge.getServer()));
+        this.getLogger().info("On Pre Initialize " + RachamonHarvestia.getName() + "...");
+    }
+
+    /**
+     * On initialize.
+     *
+     * @param event the event
+     */
+    @Listener(order = Order.EARLY)
+    public void onInitialize(GameInitializationEvent event) {
+        RachamonHarvestia.getInstance().getLogger().info("On Initialize " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getPluginManager().initialize();
+    }
+
+    /**
+     * On start.
+     *
+     * @param event the event
+     */
+    @Listener
+    public void onStart(GameStartedServerEvent event) {
+        if (!this.isInitialized()) return;
+        RachamonHarvestia.getInstance().getLogger().info("On Start " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getPluginManager().start();
+    }
+
+    /**
+     * On post initialize.
+     *
+     * @param event the event
+     */
+    @Listener
+    public void onPostInitialize(GamePostInitializationEvent event) {
+        RachamonHarvestia.getInstance().getLogger().info("On Post Initialize " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getPluginManager().postInitialize();
+    }
+
     @Override
     public LoggerUtil getLogger() {
         return this.logger;
     }
 
-    @Override
     public void setLogger(LoggerUtil logger) {
-
+        this.logger = logger;
     }
 
     @Override
@@ -100,9 +146,9 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return this.components;
     }
 
-    public RachamonHarvestiaPluginManager getHarvestiaManager() {
-        return this.components.harvestiaManager;
-    }
+//    public RachamonHarvestiaPluginManager getHarvestiaManager() {
+//        return this.getComponents().harvestiaManager;
+//    }
 
     @Override
     public boolean isInitialized() {
@@ -116,19 +162,28 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
 
     @Override
     public Injector getPluginInjector() {
-        return this.harvestiaInjector;
+        return this.injector;
     }
 
     @Override
     public Injector getSpongeInjector() {
-        return this.spongeInjector;
+        return this.pluginInjector;
     }
 
-    /**
-     * The type Components.
-     */
+    public void setPluginInjector(Injector injector) {
+        this.injector = injector;
+    }
+
+    public void setComponents(Components components) {
+        this.components = components;
+    }
+
+    public void setIsInitialized(boolean isInitialized) {
+        RachamonHarvestia.isInitialized = isInitialized;
+    }
+
     public static class Components {
-        @Inject
-        private RachamonHarvestiaPluginManager harvestiaManager;
+//        @Inject
+//        private RachamonHarvestiaPluginManager harvestiaManager;
     }
 }
