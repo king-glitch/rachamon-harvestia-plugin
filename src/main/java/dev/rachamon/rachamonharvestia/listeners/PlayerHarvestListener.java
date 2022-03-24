@@ -34,6 +34,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * The type Player harvest listener.
+ */
 public class PlayerHarvestListener {
     private final Map<UUID, EntityData> track = new HashMap<>();
     private final RachamonHarvestia plugin = RachamonHarvestia.getInstance();
@@ -48,11 +51,16 @@ public class PlayerHarvestListener {
         put("minecraft:pumpkin", new PlantData(BlockTypes.PUMPKIN, ItemTypes.PUMPKIN, null, 0));
     }};
 
+    /**
+     * On player harvest plant.
+     *
+     * @param event  the event
+     * @param player the player
+     */
     @Listener(order = Order.POST)
     public void onPlayerHarvestPlant(ChangeBlockEvent.Break event, @Root Player player) {
 
         // check if block are plant
-        RachamonHarvestia.getInstance().getLogger().debug(event.getCause().toString());
         List<Transaction<BlockSnapshot>> transactions = event.getTransactions();
 
         for (Transaction<BlockSnapshot> transaction : transactions) {
@@ -127,7 +135,7 @@ public class PlayerHarvestListener {
                 BlockState oldState = targetBlock.getState();
                 BlockState newState = oldState.with(Keys.GROWTH_STAGE, 0).orElse(oldState);
                 location.get().setBlock(newState);
-            }).delay(20, TimeUnit.MILLISECONDS).submit(this.plugin);
+            }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
 
             // process track.
             this.processTrack(new EntityData(player.getUniqueId(), player, plantData));
@@ -137,9 +145,15 @@ public class PlayerHarvestListener {
 
     private void processTrack(EntityData data) {
         this.track.put(data.living, data);
-        Task.builder().delayTicks(20).execute(() -> this.track.remove(data.living)).submit(this.plugin);
+        Task.builder().delayTicks(100).execute(() -> this.track.remove(data.living)).submit(this.plugin);
     }
 
+    /**
+     * On plant drop.
+     *
+     * @param event  the event
+     * @param living the living
+     */
     @Listener(order = Order.EARLY)
     public void onPlantDrop(SpawnEntityEvent event, @First Living living) {
 
@@ -216,6 +230,12 @@ public class PlayerHarvestListener {
         }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
     }
 
+    /**
+     * On experience orb drop.
+     *
+     * @param event  the event
+     * @param living the living
+     */
     @Listener(order = Order.EARLY)
     public void onExperienceOrbDrop(SpawnEntityEvent event, @First Living living) {
 

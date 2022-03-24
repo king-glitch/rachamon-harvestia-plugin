@@ -1,15 +1,20 @@
 package dev.rachamon.rachamonharvestia.managers;
 
 import dev.rachamon.api.sponge.config.SpongeAPIConfigFactory;
+import dev.rachamon.api.sponge.exception.AnnotatedCommandException;
 import dev.rachamon.api.sponge.implement.plugin.IRachamonPluginManager;
 import dev.rachamon.rachamonharvestia.RachamonHarvestia;
 import dev.rachamon.rachamonharvestia.RachamonHarvestiaModule;
+import dev.rachamon.rachamonharvestia.commands.HarvestiaMainCommand;
 import dev.rachamon.rachamonharvestia.config.LanguageConfig;
 import dev.rachamon.rachamonharvestia.config.MainConfig;
 import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.listeners.PlayerHarvestListener;
 import org.spongepowered.api.Sponge;
 
+/**
+ * The type Rachamon plugin manager.
+ */
 public class RachamonPluginManager implements IRachamonPluginManager {
     private final RachamonHarvestia plugin = RachamonHarvestia.getInstance();
 
@@ -43,12 +48,16 @@ public class RachamonPluginManager implements IRachamonPluginManager {
     public void reload() {
         try {
             this.configureConfigs();
+            this.registerCommands();
         } catch (Exception ignored) {
 
         }
 
     }
 
+    /**
+     * Configure configs.
+     */
     public void configureConfigs() {
         SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config = new SpongeAPIConfigFactory<>(this.plugin, "main.conf");
         SpongeAPIConfigFactory<RachamonHarvestia, LanguageConfig> language = new SpongeAPIConfigFactory<>(this.plugin, "language.conf");
@@ -75,5 +84,16 @@ public class RachamonPluginManager implements IRachamonPluginManager {
                 .setClazz(new PlayerSettingsConfig())
                 .setClazzType(PlayerSettingsConfig.class)
                 .build());
+    }
+
+    /**
+     * Register commands.
+     */
+    public void registerCommands() {
+        try {
+            this.plugin.getCommandService().register(new HarvestiaMainCommand(), this.plugin);
+        } catch (AnnotatedCommandException e) {
+            e.printStackTrace();
+        }
     }
 }

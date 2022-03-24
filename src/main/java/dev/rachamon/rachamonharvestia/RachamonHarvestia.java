@@ -8,6 +8,7 @@ import dev.rachamon.api.sponge.implement.plugin.IRachamonPlugin;
 import dev.rachamon.api.sponge.implement.plugin.IRachamonPluginManager;
 import dev.rachamon.api.sponge.provider.RachamonSpongePluginProvider;
 import dev.rachamon.api.sponge.util.LoggerUtil;
+import dev.rachamon.api.sponge.util.TextUtil;
 import dev.rachamon.rachamonharvestia.config.LanguageConfig;
 import dev.rachamon.rachamonharvestia.config.MainConfig;
 import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
@@ -16,6 +17,7 @@ import dev.rachamon.rachamonharvestia.managers.RachamonPluginManager;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -28,6 +30,9 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Path;
 
+/**
+ * The type Rachamon harvestia.
+ */
 @Plugin(id = "rachamonharvestia", name = "RachamonHarvestia", description = "Simple easy Harvest plugin", authors = {"Rachamon"})
 public class RachamonHarvestia extends RachamonSpongePluginProvider implements IRachamonPlugin {
 
@@ -56,10 +61,18 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     private SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> settings;
 
 
+    /**
+     * Instantiates a new Rachamon harvestia.
+     */
     public RachamonHarvestia() {
         super("RachamonHarvestia", true);
     }
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static RachamonHarvestia getInstance() {
         return RachamonHarvestia.instance;
     }
@@ -116,6 +129,11 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return this.logger;
     }
 
+    /**
+     * Sets logger.
+     *
+     * @param logger the logger
+     */
     public void setLogger(LoggerUtil logger) {
         this.logger = logger;
     }
@@ -150,10 +168,20 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return this.pluginManager;
     }
 
+    /**
+     * Gets components.
+     *
+     * @return the components
+     */
     public Components getComponents() {
         return this.components;
     }
 
+    /**
+     * Gets harvestia manager.
+     *
+     * @return the harvestia manager
+     */
     public RachamonHarvestiaPluginManager getHarvestiaManager() {
         return this.getComponents().harvestiaManager;
     }
@@ -178,59 +206,140 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return this.injector;
     }
 
+    /**
+     * Sets plugin injector.
+     *
+     * @param injector the injector
+     */
     public void setPluginInjector(Injector injector) {
         this.injector = injector;
     }
 
+    /**
+     * Sets components.
+     *
+     * @param components the components
+     */
     public void setComponents(Components components) {
         this.components = components;
     }
 
+    /**
+     * Sets is initialized.
+     *
+     * @param isInitialized the is initialized
+     */
     public void setIsInitialized(boolean isInitialized) {
         RachamonHarvestia.isInitialized = isInitialized;
     }
 
+    /**
+     * Gets config.
+     *
+     * @return the config
+     */
     public MainConfig getConfig() {
         return this.config.getRoot();
     }
 
+    /**
+     * Sets main config.
+     *
+     * @param config the config
+     */
     public void setMainConfig(SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config) {
         this.config = config;
     }
 
+    /**
+     * Sets config.
+     *
+     * @param config the config
+     */
     public void setConfig(MainConfig config) {
         this.config.setClazz(config);
     }
 
+    /**
+     * Gets language.
+     *
+     * @return the language
+     */
     public LanguageConfig getLanguage() {
         return this.language.getRoot();
     }
 
+    /**
+     * Sets language.
+     *
+     * @param language the language
+     */
     public void setLanguage(LanguageConfig language) {
         this.language.setClazz(language);
     }
 
+    /**
+     * Sets main language.
+     *
+     * @param language the language
+     */
     public void setMainLanguage(SpongeAPIConfigFactory<RachamonHarvestia, LanguageConfig> language) {
         this.language = language;
     }
 
+    /**
+     * Gets player settings.
+     *
+     * @return the player settings
+     */
     public PlayerSettingsConfig getPlayerSettings() {
         return this.settings.getRoot();
     }
 
+    /**
+     * Gets player settings manager.
+     *
+     * @return the player settings manager
+     */
     public SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> getPlayerSettingsManager() {
         return this.settings;
     }
 
+    /**
+     * Sets player settings.
+     *
+     * @param settings the settings
+     */
     public void setPlayerSettings(PlayerSettingsConfig settings) {
         this.settings.setClazz(settings);
     }
 
+    /**
+     * Sets player settings.
+     *
+     * @param settings the settings
+     */
     public void setPlayerSettings(SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> settings) {
         this.settings = settings;
     }
 
+    /**
+     * Send message.
+     *
+     * @param source  the source
+     * @param message the message
+     */
+    public void sendMessage(CommandSource source, String message) {
+        source.sendMessage(TextUtil.toText(RachamonHarvestia
+                .getInstance()
+                .getLanguage()
+                .getMainCategorySetting()
+                .getPrefix() + message));
+    }
 
+    /**
+     * The type Components.
+     */
     public static class Components {
         @Inject
         private RachamonHarvestiaPluginManager harvestiaManager;
