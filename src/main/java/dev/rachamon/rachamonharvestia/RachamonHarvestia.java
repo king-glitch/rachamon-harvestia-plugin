@@ -118,7 +118,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
      *
      * @param event the event
      */
-    @Listener
+    @Listener(order = Order.LAST)
     public void onPostInitialize(GamePostInitializationEvent event) {
         RachamonHarvestia.getInstance().getLogger().info("On Post Initialize " + RachamonHarvestia.getName() + "...");
         RachamonHarvestia.getInstance().getPluginManager().postInitialize();

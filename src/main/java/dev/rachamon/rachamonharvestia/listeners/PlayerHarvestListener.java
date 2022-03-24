@@ -114,7 +114,7 @@ public class PlayerHarvestListener {
                     return;
                 }
 
-                if (!RachamonHarvestia
+                if (RachamonHarvestia
                         .getInstance()
                         .getConfig()
                         .getPermissionCategorySetting()
