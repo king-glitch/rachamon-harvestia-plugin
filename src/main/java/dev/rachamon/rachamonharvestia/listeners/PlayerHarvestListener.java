@@ -7,6 +7,7 @@ import dev.rachamon.rachamonharvestia.structure.PlantData;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.entity.ExperienceOrb;
@@ -15,7 +16,7 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
@@ -43,86 +44,94 @@ public class PlayerHarvestListener {
         put("minecraft:beetroots", new PlantData(BlockTypes.BEETROOTS, ItemTypes.BEETROOT, ItemTypes.BEETROOT_SEEDS, 3));
         put("minecraft:cocoa", new PlantData(BlockTypes.COCOA, ItemTypes.DYE, ItemTypes.DYE, 2));
         put("minecraft:nether_wart", new PlantData(BlockTypes.NETHER_WART, ItemTypes.NETHER_WART, ItemTypes.NETHER_WART, 3));
+        put("minecraft:melon_block", new PlantData(BlockTypes.MELON_BLOCK, ItemTypes.MELON, null, 0));
+        put("minecraft:pumpkin", new PlantData(BlockTypes.PUMPKIN, ItemTypes.PUMPKIN, null, 0));
     }};
 
     @Listener(order = Order.POST)
-    public void onPlayerHarvestPlant(InteractBlockEvent.Primary.MainHand event, @Root Player player) {
+    public void onPlayerHarvestPlant(ChangeBlockEvent.Break event, @Root Player player) {
 
         // check if block are plant
+        RachamonHarvestia.getInstance().getLogger().debug(event.getCause().toString());
+        List<Transaction<BlockSnapshot>> transactions = event.getTransactions();
 
-        BlockSnapshot targetBlock = event.getTargetBlock();
-        PlantData plantData = PLANTS.get(targetBlock.getState().getType().getId().toLowerCase());
+        for (Transaction<BlockSnapshot> transaction : transactions) {
+            BlockSnapshot targetBlock = transaction.getOriginal();
+            PlantData plantData = PLANTS.get(targetBlock.getState().getType().getId().toLowerCase());
+            if (plantData == null) {
+                return;
+            }
 
-        if (plantData == null) {
-            return;
+            Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
+
+            if (plantData.stage != 0 && !targetStage.isPresent()) {
+                return;
+            }
+
+            if (player.get(Keys.IS_SNEAKING).orElse(false)) {
+                return;
+            }
+
+            Optional<Location<World>> location = targetBlock.getLocation();
+
+            if (!location.isPresent()) {
+                return;
+            }
+
+            if (!RachamonHarvestia.getInstance().getConfig().getMainCategorySetting().isAutoReplant()) {
+                return;
+            }
+
+            if (!player.hasPermission(RachamonHarvestia
+                    .getInstance()
+                    .getConfig()
+                    .getPermissionCategorySetting()
+                    .getAutoReplantPermission())) {
+                return;
+            }
+
+            PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
+                    .getInstance()
+                    .getHarvestiaManager()
+                    .createPlayerSetting(player.getUniqueId());
+
+            if (playerSetting == null) {
+                return;
+            }
+
+            if (!playerSetting.isAutoReplant()) {
+                return;
+            }
+
+            if (!RachamonHarvestia
+                    .getInstance()
+                    .getConfig()
+                    .getPermissionCategorySetting()
+                    .isPlantSeparatePermission() && !player.hasPermission(player.hasPermission(RachamonHarvestia
+                    .getInstance()
+                    .getConfig()
+                    .getPermissionCategorySetting()
+                    .getAutoReplantPermission()) + "." + plantData.block.getName().toLowerCase())) {
+                return;
+            }
+
+            Task.builder().execute(() -> {
+                if (RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getMainCategorySetting()
+                        .getReplantBlockBlacklists()
+                        .contains(targetBlock.getState().getType().getId().toLowerCase())) {
+                    return;
+                }
+                BlockState oldState = targetBlock.getState();
+                BlockState newState = oldState.with(Keys.GROWTH_STAGE, 0).orElse(oldState);
+                location.get().setBlock(newState);
+            }).delay(20, TimeUnit.MILLISECONDS).submit(this.plugin);
+
+            // process track.
+            this.processTrack(new EntityData(player.getUniqueId(), player, plantData));
         }
-
-        Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
-
-        if (!targetStage.isPresent()) {
-            return;
-        }
-
-
-        if (player.get(Keys.IS_SNEAKING).orElse(false)) {
-
-            this.plugin.getLogger().debug("player try to break block : " + targetStage.get().get());
-            return;
-        }
-
-        Optional<Location<World>> location = targetBlock.getLocation();
-
-        if (!location.isPresent()) {
-            this.plugin.getLogger().debug("location not found; might error ?");
-            return;
-        }
-
-        if (!RachamonHarvestia.getInstance().getConfig().getMainCategorySetting().isAutoReplant()) {
-            return;
-        }
-
-        if (!player.hasPermission(RachamonHarvestia
-                .getInstance()
-                .getConfig()
-                .getPermissionCategorySetting()
-                .getAutoReplantPermission())) {
-            return;
-        }
-
-        PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
-                .getInstance()
-                .getHarvestiaManager()
-                .createPlayerSetting(player.getUniqueId());
-
-        if (playerSetting == null) {
-            return;
-        }
-
-        if (!playerSetting.isAutoReplant()) {
-            return;
-        }
-
-        if (!RachamonHarvestia
-                .getInstance()
-                .getConfig()
-                .getPermissionCategorySetting()
-                .isPlantSeparatePermission() && !player.hasPermission(player.hasPermission(RachamonHarvestia
-                .getInstance()
-                .getConfig()
-                .getPermissionCategorySetting()
-                .getAutoReplantPermission()) + "." + plantData.block.getName().toLowerCase())) {
-            return;
-        }
-
-        Task.builder().execute(() -> {
-            BlockState oldState = targetBlock.getState();
-            BlockState newState = oldState.with(Keys.GROWTH_STAGE, 0).orElse(oldState);
-            location.get().setBlock(newState);
-        }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
-
-        // process track.
-        this.processTrack(new EntityData(player.getUniqueId(), player, plantData));
-
 
     }
 
@@ -141,7 +150,6 @@ public class PlayerHarvestListener {
         EntityData data = this.track.get(living.getUniqueId());
 
         if (data == null) {
-            RachamonHarvestia.getInstance().getLogger().debug("Data not found");
             return;
         }
 
@@ -185,7 +193,7 @@ public class PlayerHarvestListener {
             boolean isCollected = false;
             for (Item item : items) {
                 ItemStack stack = item.item().get().createStack();
-                if (!isCollected && data.plantData.fuel == stack.getType()) {
+                if (!isCollected && data.plantData.fuel != null && data.plantData.fuel == stack.getType()) {
                     stack.setQuantity(stack.getQuantity() - 1);
                     isCollected = true;
                 }
@@ -198,12 +206,7 @@ public class PlayerHarvestListener {
                                 .query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class)))
                         .offer(stack);
 
-                if (stack.getType() == ItemTypes.AIR) {
-                    item.remove();
-                    continue;
-                }
-
-                if (result.getType() == InventoryTransactionResult.Type.SUCCESS) {
+                if (stack.getType() == ItemTypes.AIR || result.getType() == InventoryTransactionResult.Type.SUCCESS) {
                     item.remove();
                     continue;
                 }
@@ -223,7 +226,6 @@ public class PlayerHarvestListener {
         EntityData data = this.track.get(living.getUniqueId());
 
         if (data == null) {
-            RachamonHarvestia.getInstance().getLogger().debug("Data not found");
             return;
         }
 

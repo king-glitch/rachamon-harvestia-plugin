@@ -3,6 +3,11 @@ package dev.rachamon.rachamonharvestia.config;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * The type Main config.
  */
@@ -52,6 +57,9 @@ public class MainConfig {
         protected boolean isAutoItemPickup = true;
 
 
+        @Setting(comment = "blacklist block, not replant [default: melon_block]", value = "replant-block-blacklists")
+        protected ArrayList<String> replantBlockBlacklists = new ArrayList<String>(Arrays.asList("minecraft:melon_block", "minecraft:pumpkin"));
+
         public boolean isDebug() {
             return isDebug;
         }
@@ -62,6 +70,10 @@ public class MainConfig {
 
         public boolean isInventoryByDefault() {
             return isInventoryByDefault;
+        }
+
+        public ArrayList<String> getReplantBlockBlacklists() {
+            return replantBlockBlacklists;
         }
 
         public boolean isDecreaseSeed() {
