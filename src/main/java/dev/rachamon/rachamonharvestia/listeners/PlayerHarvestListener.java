@@ -37,7 +37,12 @@ public class PlayerHarvestListener {
     private final Map<UUID, EntityData> track = new HashMap<>();
     private final RachamonHarvestia plugin = RachamonHarvestia.getInstance();
     private final HashMap<String, PlantData> PLANTS = new HashMap<String, PlantData>() {{
-        put(String.valueOf(BlockTypes.WHEAT), new PlantData(BlockTypes.WHEAT, ItemTypes.WHEAT, ItemTypes.WHEAT_SEEDS, 1, 3, 7));
+        put("minecraft:wheat", new PlantData(BlockTypes.WHEAT, ItemTypes.WHEAT, ItemTypes.WHEAT_SEEDS, 7));
+        put("minecraft:carrots", new PlantData(BlockTypes.CARROTS, ItemTypes.CARROT, ItemTypes.CARROT, 7));
+        put("minecraft:potatoes", new PlantData(BlockTypes.POTATOES, ItemTypes.POTATO, ItemTypes.POTATO, 7));
+        put("minecraft:beetroots", new PlantData(BlockTypes.BEETROOTS, ItemTypes.BEETROOT, ItemTypes.BEETROOT_SEEDS, 3));
+        put("minecraft:cocoa", new PlantData(BlockTypes.COCOA, ItemTypes.DYE, ItemTypes.DYE, 2));
+        put("minecraft:nether_wart", new PlantData(BlockTypes.NETHER_WART, ItemTypes.NETHER_WART, ItemTypes.NETHER_WART, 3));
     }};
 
     @Listener(order = Order.POST)
@@ -46,23 +51,22 @@ public class PlayerHarvestListener {
         // check if block are plant
 
         BlockSnapshot targetBlock = event.getTargetBlock();
-        PlantData plantData = PLANTS.get(targetBlock.getState().getType().toString());
+        PlantData plantData = PLANTS.get(targetBlock.getState().getType().getId().toLowerCase());
 
         if (plantData == null) {
-            this.plugin.getLogger().debug("Not Plant Block");
             return;
         }
 
         Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
 
         if (!targetStage.isPresent()) {
-            this.plugin.getLogger().debug("Stage key not found on this block.");
             return;
         }
 
 
-        if (plantData.stage != targetStage.get().get()) {
-            this.plugin.getLogger().debug("this plant doesn't on last stage");
+        if (player.get(Keys.IS_SNEAKING).orElse(false)) {
+
+            this.plugin.getLogger().debug("player try to break block : " + targetStage.get().get());
             return;
         }
 
@@ -117,14 +121,14 @@ public class PlayerHarvestListener {
         }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
 
         // process track.
-        this.processTrack(new EntityData(player.getUniqueId(), player));
+        this.processTrack(new EntityData(player.getUniqueId(), player, plantData));
 
 
     }
 
     private void processTrack(EntityData data) {
         this.track.put(data.living, data);
-        Task.builder().delayTicks(100).execute(() -> this.track.remove(data.living)).submit(this.plugin);
+        Task.builder().delayTicks(20).execute(() -> this.track.remove(data.living)).submit(this.plugin);
     }
 
     @Listener(order = Order.EARLY)
@@ -170,18 +174,22 @@ public class PlayerHarvestListener {
                 .collect(Collectors.toList());
 
         if (items.isEmpty()) {
-            RachamonHarvestia.getInstance().getLogger().debug("item are empty");
             return;
         }
 
         if (data.player == null) {
-            RachamonHarvestia.getInstance().getLogger().debug("Player not found");
             return;
         }
 
         Task.builder().execute(() -> {
-            items.forEach(item -> {
+            boolean isCollected = false;
+            for (Item item : items) {
                 ItemStack stack = item.item().get().createStack();
+                if (!isCollected && data.plantData.fuel == stack.getType()) {
+                    stack.setQuantity(stack.getQuantity() - 1);
+                    isCollected = true;
+                }
+
                 InventoryTransactionResult result = data.player
                         .getInventory()
                         .query(QueryOperationTypes.INVENTORY_TYPE.of(Hotbar.class))
@@ -189,18 +197,19 @@ public class PlayerHarvestListener {
                                 .getInventory()
                                 .query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class)))
                         .offer(stack);
-                if (result.getType() == InventoryTransactionResult.Type.SUCCESS) {
+
+                if (stack.getType() == ItemTypes.AIR) {
                     item.remove();
-                    return;
+                    continue;
                 }
 
-                this.plugin
-                        .getLogger()
-                        .debug("unsuccessful inventory : " + result.getType() + " : " + stack);
-            });
+                if (result.getType() == InventoryTransactionResult.Type.SUCCESS) {
+                    item.remove();
+                    continue;
+                }
 
-            this.plugin.getLogger().debug("success inventory");
-
+                this.plugin.getLogger().debug("unsuccessful inventory : " + result.getType() + " : " + stack);
+            }
         }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
     }
 
@@ -247,14 +256,10 @@ public class PlayerHarvestListener {
                 .collect(Collectors.toList());
 
         if (orbs.isEmpty()) {
-            RachamonHarvestia.getInstance().getLogger().debug("Exp are empty");
             return;
         }
 
         if (data.player == null) {
-
-            RachamonHarvestia.getInstance().getLogger().debug("Player not found");
-
             return;
         }
 

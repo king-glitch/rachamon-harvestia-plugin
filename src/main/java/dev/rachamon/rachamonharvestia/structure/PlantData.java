@@ -8,16 +8,12 @@ public class PlantData {
     public BlockType block;
     public ItemType fuel;
     public ItemType loot;
-    public int min;
-    public int max;
 
-    public PlantData(BlockType block, ItemType loot, ItemType fuel, int min, int max, int stage) {
+    public PlantData(BlockType block, ItemType loot, ItemType fuel, int stage) {
         this.stage = stage;
         this.block = block;
         this.fuel = fuel;
         this.loot = loot;
-        this.min = min;
-        this.max = max;
     }
 
 }
