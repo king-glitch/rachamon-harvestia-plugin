@@ -1,9 +1,9 @@
 package dev.rachamon.rachamonharvestia.listeners;
 
 import dev.rachamon.rachamonharvestia.RachamonHarvestia;
+import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.structure.EntityData;
 import dev.rachamon.rachamonharvestia.structure.PlantData;
-import dev.rachamon.rachamonharvestia.structure.PlayerSetting;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
@@ -85,13 +85,16 @@ public class PlayerHarvestListener {
             return;
         }
 
-        PlayerSetting playerSetting = RachamonHarvestia
+        PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                 .getInstance()
-                .getPlayerSettings()
-                .getSettings()
-                .get(player.getUniqueId().toString());
+                .getHarvestiaManager()
+                .createPlayerSetting(player.getUniqueId());
 
-        if (playerSetting != null && !playerSetting.isAutoReplant()) {
+        if (playerSetting == null) {
+            return;
+        }
+
+        if (!playerSetting.isAutoReplant()) {
             return;
         }
 
@@ -146,12 +149,16 @@ public class PlayerHarvestListener {
             return;
         }
 
-        PlayerSetting playerSetting = RachamonHarvestia
+        PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                 .getInstance()
-                .getPlayerSettings()
-                .getSettings()
-                .get(data.player.getUniqueId().toString());
-        if (playerSetting != null && !playerSetting.isAutoPickupItem()) {
+                .getHarvestiaManager()
+                .createPlayerSetting(data.player.getUniqueId());
+
+        if (playerSetting == null) {
+            return;
+        }
+
+        if (!playerSetting.isAutoPickupItem()) {
             return;
         }
 
@@ -189,7 +196,7 @@ public class PlayerHarvestListener {
 
                 this.plugin
                         .getLogger()
-                        .debug("unsuccessful inventory : " + result.getType() + " : " + stack.toString());
+                        .debug("unsuccessful inventory : " + result.getType() + " : " + stack);
             });
 
             this.plugin.getLogger().debug("success inventory");
@@ -219,12 +226,16 @@ public class PlayerHarvestListener {
             return;
         }
 
-        PlayerSetting playerSetting = RachamonHarvestia
+        PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                 .getInstance()
-                .getPlayerSettings()
-                .getSettings()
-                .get(data.player.getUniqueId().toString());
-        if (playerSetting != null && !playerSetting.isAutoPickupExp()) {
+                .getHarvestiaManager()
+                .createPlayerSetting(data.player.getUniqueId());
+
+        if (playerSetting == null) {
+            return;
+        }
+
+        if (!playerSetting.isAutoPickupExp()) {
             return;
         }
 

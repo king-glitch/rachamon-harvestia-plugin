@@ -157,6 +157,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     public RachamonHarvestiaPluginManager getHarvestiaManager() {
         return this.getComponents().harvestiaManager;
     }
+
     @Override
     public boolean isInitialized() {
         return RachamonHarvestia.isInitialized;
@@ -169,12 +170,12 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
 
     @Override
     public Injector getPluginInjector() {
-        return this.injector;
+        return this.pluginInjector;
     }
 
     @Override
     public Injector getSpongeInjector() {
-        return this.pluginInjector;
+        return this.injector;
     }
 
     public void setPluginInjector(Injector injector) {

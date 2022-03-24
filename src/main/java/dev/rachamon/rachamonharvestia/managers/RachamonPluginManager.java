@@ -56,6 +56,7 @@ public class RachamonPluginManager implements IRachamonPluginManager {
 
         this.plugin.setMainConfig(config);
         this.plugin.setMainLanguage(language);
+        this.plugin.setPlayerSettings(settings);
 
         this.plugin.setConfig(config
                 .setHeader("Main Config")
