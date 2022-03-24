@@ -52,7 +52,7 @@ public class MainConfig {
         /**
          * The Is auto replant.
          */
-        @Setting(comment = "is auto replant [default: true]", value = "is auto replant.")
+        @Setting(comment = "is auto replant [default: true]", value = "is-auto-replant.")
         protected boolean isAutoReplant = true;
 
         /**

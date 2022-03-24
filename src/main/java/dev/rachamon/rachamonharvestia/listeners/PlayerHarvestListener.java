@@ -118,11 +118,11 @@ public class PlayerHarvestListener {
                         .getInstance()
                         .getConfig()
                         .getPermissionCategorySetting()
-                        .isPlantSeparatePermission() && !player.hasPermission(player.hasPermission(RachamonHarvestia
+                        .isPlantSeparatePermission() && !player.hasPermission(RachamonHarvestia
                         .getInstance()
                         .getConfig()
                         .getPermissionCategorySetting()
-                        .getAutoBaseReplantPermission()) + "." + plantData.block.getName().toLowerCase())) {
+                        .getAutoBaseReplantPermission() + "." + plantData.block.getName().toLowerCase())) {
                     return;
                 }
 
@@ -211,7 +211,21 @@ public class PlayerHarvestListener {
             boolean isCollected = false;
             for (Item item : items) {
                 ItemStack stack = item.item().get().createStack();
-                if (playerSetting.isAutoReplant() && !isCollected && data.plantData.fuel != null && data.plantData.fuel == stack.getType()) {
+                if (playerSetting.isAutoReplant() && data.player.hasPermission(RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getPermissionCategorySetting()
+                        .getAutoReplantPermission()) && (!RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getPermissionCategorySetting()
+                        .isPlantSeparatePermission() || (data.player.hasPermission(RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getPermissionCategorySetting()
+                        .getAutoBaseReplantPermission() + "." + data.plantData.block
+                        .getName()
+                        .toLowerCase()))) && !isCollected && data.plantData.fuel != null && data.plantData.fuel == stack.getType()) {
                     stack.setQuantity(stack.getQuantity() - 1);
                     isCollected = true;
                 }
