@@ -3,10 +3,14 @@ package dev.rachamon.rachamonharvestia;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import dev.rachamon.api.sponge.command.SpongeCommandService;
+import dev.rachamon.api.sponge.config.SpongeAPIConfigFactory;
 import dev.rachamon.api.sponge.implement.plugin.IRachamonPlugin;
 import dev.rachamon.api.sponge.implement.plugin.IRachamonPluginManager;
 import dev.rachamon.api.sponge.provider.RachamonSpongePluginProvider;
 import dev.rachamon.api.sponge.util.LoggerUtil;
+import dev.rachamon.rachamonharvestia.config.LanguageConfig;
+import dev.rachamon.rachamonharvestia.config.MainConfig;
+import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.managers.RachamonHarvestiaPluginManager;
 import dev.rachamon.rachamonharvestia.managers.RachamonPluginManager;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
@@ -46,6 +50,10 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     private Injector injector;
     @Inject
     private Injector pluginInjector;
+
+    private SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config;
+    private SpongeAPIConfigFactory<RachamonHarvestia, LanguageConfig> language;
+    private SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> settings;
 
 
     public RachamonHarvestia() {
@@ -146,10 +154,9 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         return this.components;
     }
 
-//    public RachamonHarvestiaPluginManager getHarvestiaManager() {
-//        return this.getComponents().harvestiaManager;
-//    }
-
+    public RachamonHarvestiaPluginManager getHarvestiaManager() {
+        return this.getComponents().harvestiaManager;
+    }
     @Override
     public boolean isInitialized() {
         return RachamonHarvestia.isInitialized;
@@ -182,8 +189,49 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         RachamonHarvestia.isInitialized = isInitialized;
     }
 
+    public MainConfig getConfig() {
+        return this.config.getRoot();
+    }
+
+    public void setMainConfig(SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config) {
+        this.config = config;
+    }
+
+    public void setConfig(MainConfig config) {
+        this.config.setClazz(config);
+    }
+
+    public LanguageConfig getLanguage() {
+        return this.language.getRoot();
+    }
+
+    public void setLanguage(LanguageConfig language) {
+        this.language.setClazz(language);
+    }
+
+    public void setMainLanguage(SpongeAPIConfigFactory<RachamonHarvestia, LanguageConfig> language) {
+        this.language = language;
+    }
+
+    public PlayerSettingsConfig getPlayerSettings() {
+        return this.settings.getRoot();
+    }
+
+    public SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> getPlayerSettingsManager() {
+        return this.settings;
+    }
+
+    public void setPlayerSettings(PlayerSettingsConfig settings) {
+        this.settings.setClazz(settings);
+    }
+
+    public void setPlayerSettings(SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> settings) {
+        this.settings = settings;
+    }
+
+
     public static class Components {
-//        @Inject
-//        private RachamonHarvestiaPluginManager harvestiaManager;
+        @Inject
+        private RachamonHarvestiaPluginManager harvestiaManager;
     }
 }

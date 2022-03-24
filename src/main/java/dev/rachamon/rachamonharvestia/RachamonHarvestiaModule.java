@@ -8,6 +8,6 @@ public class RachamonHarvestiaModule extends AbstractModule {
 
     @Override
     protected void configure() {
-//        bind(RachamonHarvestiaPluginManager.class).in(Scopes.SINGLETON);
+        bind(RachamonHarvestiaPluginManager.class).in(Scopes.SINGLETON);
     }
 }
