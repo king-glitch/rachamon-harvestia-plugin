@@ -56,7 +56,7 @@ public class LanguageConfig {
          * The Enabled.
          */
         @Setting(value = "disabled")
-        protected String enabled = "&c&lEnabled&r";
+        protected String enabled = "&a&lEnabled&r";
 
         /**
          * Gets prefix.

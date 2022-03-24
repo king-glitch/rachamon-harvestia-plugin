@@ -169,6 +169,10 @@ public class MainConfig {
         @Setting(comment = "auto replant permission [default: rachamonharvestia.auto.plant.base]", value = "auto-replant-permission")
         protected String autoReplantPermission = "rachamonharvestia.auto.plant.base";
 
+
+        @Setting(comment = "auto replant base permission [default: rachamonharvestia.auto.plant]", value = "auto-base-replant-permission")
+        protected String autoBaseReplantPermission = "rachamonharvestia.auto.plant";
+
         /**
          * The Auto item pickup permission.
          */
@@ -215,6 +219,10 @@ public class MainConfig {
          */
         public String getAutoExpPickupPermission() {
             return autoExpPickupPermission;
+        }
+
+        public String getAutoBaseReplantPermission() {
+            return autoBaseReplantPermission;
         }
     }
 }

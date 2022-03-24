@@ -32,7 +32,7 @@ public class HarvestiaAutoReplant implements IPlayerCommand, IParameterizedComma
                         .getLanguage()
                         .getCommandCategorySetting()
                         .getSuccessfullyCommandAutoReplant()
-                        .replace("\\{type}", setting.isAutoReplant() ? RachamonHarvestia
+                        .replaceAll("\\{type}", setting.isAutoReplant() ? RachamonHarvestia
                                 .getInstance()
                                 .getLanguage()
                                 .getMainCategorySetting()

@@ -101,29 +101,31 @@ public class PlayerHarvestListener {
             PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                     .getInstance()
                     .getHarvestiaManager()
-                    .createPlayerSetting(player.getUniqueId());
+                    .getPlayerSettingOrCreate(player.getUniqueId());
 
             if (playerSetting == null) {
                 return;
             }
 
-            if (!playerSetting.isAutoReplant()) {
-                return;
-            }
-
-            if (!RachamonHarvestia
-                    .getInstance()
-                    .getConfig()
-                    .getPermissionCategorySetting()
-                    .isPlantSeparatePermission() && !player.hasPermission(player.hasPermission(RachamonHarvestia
-                    .getInstance()
-                    .getConfig()
-                    .getPermissionCategorySetting()
-                    .getAutoReplantPermission()) + "." + plantData.block.getName().toLowerCase())) {
-                return;
-            }
 
             Task.builder().execute(() -> {
+
+                if (!playerSetting.isAutoReplant()) {
+                    return;
+                }
+
+                if (!RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getPermissionCategorySetting()
+                        .isPlantSeparatePermission() && !player.hasPermission(player.hasPermission(RachamonHarvestia
+                        .getInstance()
+                        .getConfig()
+                        .getPermissionCategorySetting()
+                        .getAutoBaseReplantPermission()) + "." + plantData.block.getName().toLowerCase())) {
+                    return;
+                }
+
                 if (RachamonHarvestia
                         .getInstance()
                         .getConfig()
@@ -132,9 +134,11 @@ public class PlayerHarvestListener {
                         .contains(targetBlock.getState().getType().getId().toLowerCase())) {
                     return;
                 }
+
                 BlockState oldState = targetBlock.getState();
                 BlockState newState = oldState.with(Keys.GROWTH_STAGE, 0).orElse(oldState);
                 location.get().setBlock(newState);
+
             }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
 
             // process track.
@@ -178,7 +182,7 @@ public class PlayerHarvestListener {
         PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                 .getInstance()
                 .getHarvestiaManager()
-                .createPlayerSetting(data.player.getUniqueId());
+                .getPlayerSettingOrCreate(data.player.getUniqueId());
 
         if (playerSetting == null) {
             return;
@@ -207,7 +211,7 @@ public class PlayerHarvestListener {
             boolean isCollected = false;
             for (Item item : items) {
                 ItemStack stack = item.item().get().createStack();
-                if (!isCollected && data.plantData.fuel != null && data.plantData.fuel == stack.getType()) {
+                if (playerSetting.isAutoReplant() && !isCollected && data.plantData.fuel != null && data.plantData.fuel == stack.getType()) {
                     stack.setQuantity(stack.getQuantity() - 1);
                     isCollected = true;
                 }
@@ -260,7 +264,7 @@ public class PlayerHarvestListener {
         PlayerSettingsConfig.PlayerSetting playerSetting = RachamonHarvestia
                 .getInstance()
                 .getHarvestiaManager()
-                .createPlayerSetting(data.player.getUniqueId());
+                .getPlayerSettingOrCreate(data.player.getUniqueId());
 
         if (playerSetting == null) {
             return;

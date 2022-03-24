@@ -14,8 +14,8 @@ import javax.annotation.Nonnull;
  * The type Harvestia auto pickup exp.
  */
 @ICommandDescription("toggle auto replant")
-@ICommandAliases({"replant"})
-@ICommandPermission("rachamonharvestia.command.toggle.replant")
+@ICommandAliases({"exp"})
+@ICommandPermission("rachamonharvestia.command.toggle.exp")
 public class HarvestiaAutoPickupExp implements IPlayerCommand, IParameterizedCommand {
 
     @Nonnull
@@ -33,7 +33,7 @@ public class HarvestiaAutoPickupExp implements IPlayerCommand, IParameterizedCom
                         .getLanguage()
                         .getCommandCategorySetting()
                         .getSuccessfullyCommandAutoPickupExp()
-                        .replace("\\{type}", setting.isAutoReplant() ? RachamonHarvestia
+                        .replaceAll("\\{type}", setting.isAutoPickupExp() ? RachamonHarvestia
                                 .getInstance()
                                 .getLanguage()
                                 .getMainCategorySetting()
