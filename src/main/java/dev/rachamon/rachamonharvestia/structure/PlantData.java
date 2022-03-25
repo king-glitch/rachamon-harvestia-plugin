@@ -12,21 +12,25 @@ public class PlantData {
     /**
      * The Stage.
      */
-    public int stage;
+    private int stage;
     /**
      * The Block.
      */
-    public BlockType block;
+    private BlockType block;
     /**
      * The Loot.
      */
-    public ItemType loot;
+    private ItemType loot;
+    /**
+     * The Loot.
+     */
+    private boolean isFullyGrown;
 
     /**
      * The Fuel.
      */
     @Nullable
-    public ItemType fuel;
+    private ItemType fuel;
 
     /**
      * Instantiates a new Plant data.
@@ -41,6 +45,98 @@ public class PlantData {
         this.block = block;
         this.fuel = fuel;
         this.loot = loot;
+        this.isFullyGrown = false;
+    }
+
+    /**
+     * Gets stage.
+     *
+     * @return the stage
+     */
+    public int getStage() {
+        return stage;
+    }
+
+    /**
+     * Sets stage.
+     *
+     * @param stage the stage
+     */
+    public void setStage(int stage) {
+        this.stage = stage;
+    }
+
+    /**
+     * Gets block.
+     *
+     * @return the block
+     */
+    public BlockType getBlock() {
+        return block;
+    }
+
+    /**
+     * Sets block.
+     *
+     * @param block the block
+     */
+    public void setBlock(BlockType block) {
+        this.block = block;
+    }
+
+    /**
+     * Gets loot.
+     *
+     * @return the loot
+     */
+    public ItemType getLoot() {
+        return loot;
+    }
+
+    /**
+     * Sets loot.
+     *
+     * @param loot the loot
+     */
+    public void setLoot(ItemType loot) {
+        this.loot = loot;
+    }
+
+    /**
+     * Is fully grown boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isFullyGrown() {
+        return isFullyGrown;
+    }
+
+    /**
+     * Sets fully grown.
+     *
+     * @param fullyGrown the fully grown
+     */
+    public void setFullyGrown(boolean fullyGrown) {
+        isFullyGrown = fullyGrown;
+    }
+
+    /**
+     * Gets fuel.
+     *
+     * @return the fuel
+     */
+    @Nullable
+    public ItemType getFuel() {
+        return fuel;
+    }
+
+    /**
+     * Sets fuel.
+     *
+     * @param fuel the fuel
+     */
+    public void setFuel(@Nullable ItemType fuel) {
+        this.fuel = fuel;
     }
 
 }

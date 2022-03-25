@@ -52,7 +52,7 @@ public class MainConfig {
         /**
          * The Is auto replant.
          */
-        @Setting(comment = "is auto replant [default: true]", value = "is-auto-replant.")
+        @Setting(comment = "is auto replant [default: true]", value = "is-auto-replant")
         protected boolean isAutoReplant = true;
 
         /**
@@ -170,6 +170,9 @@ public class MainConfig {
         protected String autoReplantPermission = "rachamonharvestia.auto.plant.base";
 
 
+        /**
+         * The Auto base replant permission.
+         */
         @Setting(comment = "auto replant base permission [default: rachamonharvestia.auto.plant]", value = "auto-base-replant-permission")
         protected String autoBaseReplantPermission = "rachamonharvestia.auto.plant";
 
@@ -221,6 +224,11 @@ public class MainConfig {
             return autoExpPickupPermission;
         }
 
+        /**
+         * Gets auto base replant permission.
+         *
+         * @return the auto base replant permission
+         */
         public String getAutoBaseReplantPermission() {
             return autoBaseReplantPermission;
         }
