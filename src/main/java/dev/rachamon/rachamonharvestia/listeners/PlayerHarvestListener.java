@@ -1,5 +1,6 @@
 package dev.rachamon.rachamonharvestia.listeners;
 
+import com.flowpowered.math.vector.Vector3d;
 import dev.rachamon.rachamonharvestia.RachamonHarvestia;
 import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.structure.EntityData;
@@ -50,6 +51,7 @@ public class PlayerHarvestListener {
         put("minecraft:nether_wart", new PlantData(BlockTypes.NETHER_WART, ItemTypes.NETHER_WART, ItemTypes.NETHER_WART, 3));
         put("minecraft:melon_block", new PlantData(BlockTypes.MELON_BLOCK, ItemTypes.MELON, null, 0));
         put("minecraft:pumpkin", new PlantData(BlockTypes.PUMPKIN, ItemTypes.PUMPKIN, null, 0));
+        put("minecraft:reeds", new PlantData(BlockTypes.REEDS, ItemTypes.REEDS, ItemTypes.REEDS, 0));
     }};
 
     /**
@@ -120,9 +122,30 @@ public class PlayerHarvestListener {
                     .getReplantBlockBlacklists()
                     .contains(targetBlock.getState().getType().getId().toLowerCase());
 
+            boolean isNeedDirt = targetBlock.getState().getType() == BlockTypes.REEDS;
+
+            boolean isDirtInCollection = RachamonHarvestia
+                    .getInstance()
+                    .getConfig()
+                    .getMainCategorySetting()
+                    .getDirtCollection()
+                    .contains(location
+                            .get()
+                            .setPosition(new Vector3d(location.get().getBlockX(), location
+                                    .get()
+                                    .getBlockY() - 1, location.get().getBlockZ()))
+                            .getBlock()
+                            .getType()
+                            .getId()
+                            .toLowerCase());
+
             Task.builder().execute(() -> {
 
                 if (!isAutoReplant) {
+                    return;
+                }
+
+                if (isNeedDirt && !isDirtInCollection) {
                     return;
                 }
 
@@ -133,7 +156,7 @@ public class PlayerHarvestListener {
             }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
 
             // process track.
-            this.processTrack(new EntityData(player.getUniqueId(), player, plantData, isAutoReplant));
+            this.processTrack(new EntityData(player.getUniqueId(), player, plantData, isAutoReplant && (!isNeedDirt || isDirtInCollection)));
         }
 
     }

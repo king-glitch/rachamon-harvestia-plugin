@@ -86,6 +86,14 @@ public class MainConfig {
         @Setting(comment = "blacklist block, not replant [default: melon_block]", value = "replant-block-blacklists")
         protected ArrayList<String> replantBlockBlacklists = new ArrayList<String>(Arrays.asList("minecraft:melon_block", "minecraft:pumpkin"));
 
+
+        @Setting(comment = "dirt blocks to replant such a sugar cane", value = "dirt-collection")
+        protected ArrayList<String> dirtCollection = new ArrayList<String>(Arrays.asList("minecraft:dirt", "minecraft:grass", "minecraft:sand"));
+
+        public ArrayList<String> getDirtCollection() {
+            return dirtCollection;
+        }
+
         /**
          * Is debug boolean.
          *
