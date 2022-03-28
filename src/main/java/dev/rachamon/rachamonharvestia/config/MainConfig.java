@@ -7,6 +7,7 @@ import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * The type Main config.
@@ -83,11 +84,13 @@ public class MainConfig {
         /**
          * The Replant block blacklists.
          */
-        @Setting(comment = "blacklist block, not replant [default: melon_block]", value = "replant-block-blacklists")
+        @Setting(comment = "blacklist block, not replant", value = "replant-block-blacklists")
         protected ArrayList<String> replantBlockBlacklists = new ArrayList<String>(Arrays.asList("minecraft:melon_block", "minecraft:pumpkin"));
 
+        @Setting(comment = "need dirt like sugar cane plant", value = "need-dirt-collection")
+        protected ArrayList<String> needDirtCollection = new ArrayList<String>(Collections.singletonList("minecraft:reeds"));
 
-        @Setting(comment = "dirt blocks to replant such a sugar cane", value = "dirt-collection")
+        @Setting(comment = "dirt blocks to replant from need dirt plants", value = "dirt-collection")
         protected ArrayList<String> dirtCollection = new ArrayList<String>(Arrays.asList("minecraft:dirt", "minecraft:grass", "minecraft:sand"));
 
         public ArrayList<String> getDirtCollection() {
@@ -157,6 +160,9 @@ public class MainConfig {
             return isAutoItemPickup;
         }
 
+        public ArrayList<String> getNeedDirtCollection() {
+            return needDirtCollection;
+        }
     }
 
     /**

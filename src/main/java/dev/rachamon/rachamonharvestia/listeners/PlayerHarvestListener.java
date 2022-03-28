@@ -2,12 +2,12 @@ package dev.rachamon.rachamonharvestia.listeners;
 
 import com.flowpowered.math.vector.Vector3d;
 import dev.rachamon.rachamonharvestia.RachamonHarvestia;
+import dev.rachamon.rachamonharvestia.config.PlantsConfig;
 import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.structure.EntityData;
 import dev.rachamon.rachamonharvestia.structure.PlantData;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
@@ -42,17 +42,6 @@ import java.util.stream.Collectors;
 public class PlayerHarvestListener {
     private final Map<UUID, EntityData> track = new HashMap<>();
     private final RachamonHarvestia plugin = RachamonHarvestia.getInstance();
-    private final HashMap<String, PlantData> PLANTS = new HashMap<String, PlantData>() {{
-        put("minecraft:wheat", new PlantData(BlockTypes.WHEAT, ItemTypes.WHEAT, ItemTypes.WHEAT_SEEDS, 7));
-        put("minecraft:carrots", new PlantData(BlockTypes.CARROTS, ItemTypes.CARROT, ItemTypes.CARROT, 7));
-        put("minecraft:potatoes", new PlantData(BlockTypes.POTATOES, ItemTypes.POTATO, ItemTypes.POTATO, 7));
-        put("minecraft:beetroots", new PlantData(BlockTypes.BEETROOTS, ItemTypes.BEETROOT, ItemTypes.BEETROOT_SEEDS, 3));
-        put("minecraft:cocoa", new PlantData(BlockTypes.COCOA, ItemTypes.DYE, ItemTypes.DYE, 2));
-        put("minecraft:nether_wart", new PlantData(BlockTypes.NETHER_WART, ItemTypes.NETHER_WART, ItemTypes.NETHER_WART, 3));
-        put("minecraft:melon_block", new PlantData(BlockTypes.MELON_BLOCK, ItemTypes.MELON, null, 0));
-        put("minecraft:pumpkin", new PlantData(BlockTypes.PUMPKIN, ItemTypes.PUMPKIN, null, 0));
-        put("minecraft:reeds", new PlantData(BlockTypes.REEDS, ItemTypes.REEDS, ItemTypes.REEDS, 0));
-    }};
 
     /**
      * On player harvest plant.
@@ -67,10 +56,39 @@ public class PlayerHarvestListener {
 
         for (Transaction<BlockSnapshot> transaction : transactions) {
             BlockSnapshot targetBlock = transaction.getOriginal();
-            PlantData plantData = PLANTS.get(targetBlock.getState().getType().getId().toLowerCase());
-            if (plantData == null) {
+
+            PlantsConfig.PlantDataConfig plantDataConfig = RachamonHarvestia
+                    .getInstance()
+                    .getAllPlants()
+                    .get(targetBlock.getState().getType().getId().toLowerCase());
+
+            if (plantDataConfig == null) {
+                try {
+
+                    RachamonHarvestia
+                            .getInstance()
+                            .getPlants()
+                            .getPlants()
+                            .put(transaction
+                                    .getOriginal()
+                                    .getState()
+                                    .getType()
+                                    .getId()
+                                    .toLowerCase(), new PlantsConfig.PlantDataConfig(targetBlock
+                                    .getState()
+                                    .getType()
+                                    .getId(), targetBlock.getState().getType().getId(), 0));
+
+                    RachamonHarvestia.getInstance().getPlantsConfig().save();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 return;
             }
+
+            PlantData plantData = new PlantData(plantDataConfig.getBlock(), plantDataConfig.getFuel(), plantDataConfig.getStage());
 
             Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
 
@@ -78,7 +96,8 @@ public class PlayerHarvestListener {
                 return;
             }
 
-            plantData.setFullyGrown(!(!targetStage.isPresent() || plantData.getStage() != targetStage.get().get()));
+
+            plantData.setFullyGrown(!targetStage.isPresent() || plantData.getStage() == targetStage.get().get());
 
             if (player.get(Keys.IS_SNEAKING).orElse(false)) {
                 return;
@@ -112,17 +131,19 @@ public class PlayerHarvestListener {
             }
 
 
-            boolean isAutoReplant = playerSetting.isAutoReplant() && this.isPlayerHasAutoReplantPermission(player, plantData
-                    .getBlock()
-                    .getName()
-                    .toLowerCase()) && !RachamonHarvestia
+            boolean isAutoReplant = playerSetting.isAutoReplant() && this.isPlayerHasAutoReplantPermission(player, plantData.getBlock()) && !RachamonHarvestia
                     .getInstance()
                     .getConfig()
                     .getMainCategorySetting()
                     .getReplantBlockBlacklists()
                     .contains(targetBlock.getState().getType().getId().toLowerCase());
 
-            boolean isNeedDirt = targetBlock.getState().getType() == BlockTypes.REEDS;
+            boolean isNeedDirt = RachamonHarvestia
+                    .getInstance()
+                    .getConfig()
+                    .getMainCategorySetting()
+                    .getNeedDirtCollection()
+                    .contains(targetBlock.getState().getType().getId().toLowerCase());
 
             boolean isDirtInCollection = RachamonHarvestia
                     .getInstance()
@@ -153,7 +174,7 @@ public class PlayerHarvestListener {
                 BlockState newState = oldState.with(Keys.GROWTH_STAGE, 0).orElse(oldState);
                 location.get().setBlock(newState);
 
-            }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
+            }).delay(40, TimeUnit.MILLISECONDS).submit(this.plugin);
 
             // process track.
             this.processTrack(new EntityData(player.getUniqueId(), player, plantData, isAutoReplant && (!isNeedDirt || isDirtInCollection)));
@@ -182,7 +203,7 @@ public class PlayerHarvestListener {
 
     private void processTrack(EntityData data) {
         this.track.put(data.getLiving(), data);
-        Task.builder().delayTicks(100).execute(() -> this.track.remove(data.getLiving())).submit(this.plugin);
+        Task.builder().delayTicks(40).execute(() -> this.track.remove(data.getLiving())).submit(this.plugin);
     }
 
     /**
@@ -262,9 +283,12 @@ public class PlayerHarvestListener {
 
                 ItemStack stack = item.item().get().createStack();
 
-                if (data.isPlantSuccessfully() && !isCollected && data.getPlantData().getFuel() != null && data
+                if (data.isPlantSuccessfully() && !isCollected && data
                         .getPlantData()
-                        .getFuel() == stack.getType()) {
+                        .getFuel() != null && Objects.equals(data.getPlantData().getFuel(), stack
+                        .getType()
+                        .getId()
+                        .toLowerCase())) {
                     stack.setQuantity(stack.getQuantity() - 1);
                     isCollected = true;
                 }

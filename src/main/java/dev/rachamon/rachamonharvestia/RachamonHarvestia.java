@@ -11,6 +11,7 @@ import dev.rachamon.api.sponge.util.LoggerUtil;
 import dev.rachamon.api.sponge.util.TextUtil;
 import dev.rachamon.rachamonharvestia.config.LanguageConfig;
 import dev.rachamon.rachamonharvestia.config.MainConfig;
+import dev.rachamon.rachamonharvestia.config.PlantsConfig;
 import dev.rachamon.rachamonharvestia.config.PlayerSettingsConfig;
 import dev.rachamon.rachamonharvestia.managers.RachamonHarvestiaPluginManager;
 import dev.rachamon.rachamonharvestia.managers.RachamonPluginManager;
@@ -29,6 +30,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The type Rachamon harvestia.
@@ -56,7 +59,10 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     @Inject
     private Injector pluginInjector;
 
+    private Map<String, PlantsConfig.PlantDataConfig> allPlants = new HashMap<String, PlantsConfig.PlantDataConfig>();
+
     private SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config;
+    private SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> plants;
     private SpongeAPIConfigFactory<RachamonHarvestia, LanguageConfig> language;
     private SpongeAPIConfigFactory<RachamonHarvestia, PlayerSettingsConfig> settings;
 
@@ -287,6 +293,23 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         this.language = language;
     }
 
+    public void setPlants(PlantsConfig plants) {
+        this.plants.setClazz(plants);
+    }
+
+    public void setMainPlants(SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> plants) {
+        this.plants = plants;
+    }
+
+    public PlantsConfig getPlants() {
+        return this.plants.getRoot();
+    }
+
+    public SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> getPlantsConfig() {
+        return this.plants;
+    }
+
+
     /**
      * Gets player settings.
      *
@@ -335,6 +358,14 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
                 .getLanguage()
                 .getMainCategorySetting()
                 .getPrefix() + message));
+    }
+
+    public Map<String, PlantsConfig.PlantDataConfig> getAllPlants() {
+        return allPlants;
+    }
+
+    public void setAllPlants(Map<String, PlantsConfig.PlantDataConfig> allPlants) {
+        this.allPlants = allPlants;
     }
 
     /**
