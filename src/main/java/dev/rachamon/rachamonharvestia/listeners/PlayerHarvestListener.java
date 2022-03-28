@@ -62,32 +62,6 @@ public class PlayerHarvestListener {
                     .getAllPlants()
                     .get(targetBlock.getState().getType().getId().toLowerCase());
 
-            if (plantDataConfig == null) {
-                try {
-
-                    RachamonHarvestia
-                            .getInstance()
-                            .getPlants()
-                            .getPlants()
-                            .put(transaction
-                                    .getOriginal()
-                                    .getState()
-                                    .getType()
-                                    .getId()
-                                    .toLowerCase(), new PlantsConfig.PlantDataConfig(targetBlock
-                                    .getState()
-                                    .getType()
-                                    .getId(), targetBlock.getState().getType().getId(), 0));
-
-                    RachamonHarvestia.getInstance().getPlantsConfig().save();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return;
-            }
-
             PlantData plantData = new PlantData(plantDataConfig.getBlock(), plantDataConfig.getFuel(), plantDataConfig.getStage());
 
             Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
