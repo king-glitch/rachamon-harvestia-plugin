@@ -283,12 +283,10 @@ public class PlayerHarvestListener {
 
                 ItemStack stack = item.item().get().createStack();
 
-                if (data.isPlantSuccessfully() && !isCollected && data
+                if (data.isPlantSuccessfully() && !isCollected && data.getPlantData().getFuel() != null && data
                         .getPlantData()
-                        .getFuel() != null && Objects.equals(data.getPlantData().getFuel(), stack
-                        .getType()
-                        .getId()
-                        .toLowerCase())) {
+                        .getFuel()
+                        .equalsIgnoreCase(stack.getType().getId().toLowerCase())) {
                     stack.setQuantity(stack.getQuantity() - 1);
                     isCollected = true;
                 }
