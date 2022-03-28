@@ -62,6 +62,10 @@ public class PlayerHarvestListener {
                     .getAllPlants()
                     .get(targetBlock.getState().getType().getId().toLowerCase());
 
+            if (plantDataConfig == null) {
+                return;
+            }
+
             PlantData plantData = new PlantData(plantDataConfig.getBlock(), plantDataConfig.getFuel(), plantDataConfig.getStage());
 
             Optional<MutableBoundedValue<Integer>> targetStage = targetBlock.getState().getValue(Keys.GROWTH_STAGE);
