@@ -71,7 +71,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
      * Instantiates a new Rachamon harvestia.
      */
     public RachamonHarvestia() {
-        super("RachamonHarvestia", true);
+        super("RachamonHarvestia");
     }
 
     /**
@@ -92,7 +92,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     public void onPreInitialize(GamePreInitializationEvent event) {
         instance = this;
         this.pluginManager = new RachamonPluginManager();
-        this.setLogger(new LoggerUtil(Sponge.getServer()));
+        this.setLogger(new LoggerUtil(Sponge.getServer(), false));
         this.getLogger().info("On Pre Initialize " + RachamonHarvestia.getName() + "...");
     }
 

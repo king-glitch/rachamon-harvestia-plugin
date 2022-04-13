@@ -95,6 +95,8 @@ public class RachamonPluginManager implements IRachamonPluginManager {
                 .build());
 
         this.plugin.setAllPlants(this.plugin.getPlants().getPlants());
+
+        this.plugin.getLogger().setDebug(this.plugin.getConfig().getMainCategorySetting().isDebug());
     }
 
     /**

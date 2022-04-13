@@ -17,7 +17,7 @@ allprojects {
 
 dependencies {
     compileOnly 'org.spongepowered:spongeapi:7.4.0'
-    implementation 'com.github.king-glitch:sponge-plugin-api:aad68f5f00'
+    implementation 'com.github.king-glitch:sponge-plugin-api:9f99b37742'
     annotationProcessor 'org.spongepowered:spongeapi:7.4.0'
 }
 

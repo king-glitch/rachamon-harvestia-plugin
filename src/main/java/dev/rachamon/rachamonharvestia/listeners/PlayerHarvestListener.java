@@ -62,6 +62,8 @@ public class PlayerHarvestListener {
                     .getAllPlants()
                     .get(targetBlock.getState().getType().getId().toLowerCase());
 
+            this.plugin.getLogger().debug("harvest block:" + targetBlock.getState().getType().getId().toLowerCase());
+
             if (plantDataConfig == null) {
                 return;
             }
@@ -281,10 +283,7 @@ public class PlayerHarvestListener {
 
                 if (stack.getType() == ItemTypes.AIR || result.getType() == InventoryTransactionResult.Type.SUCCESS) {
                     item.remove();
-                    continue;
                 }
-
-                this.plugin.getLogger().debug("unsuccessful inventory : " + result.getType() + " : " + stack);
             }
         }).delay(100, TimeUnit.MILLISECONDS).submit(this.plugin);
     }
