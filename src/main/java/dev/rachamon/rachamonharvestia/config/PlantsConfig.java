@@ -7,49 +7,97 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Plants config.
+ */
 @ConfigSerializable
 public class PlantsConfig {
 
 
+    /**
+     * The Plants.
+     */
     @Setting(value = "plants", comment = "All plants")
     protected Map<String, PlantDataConfig> plants = this.initializePlants();
 
+    /**
+     * The type Plant data config.
+     */
     @ConfigSerializable
     public static class PlantDataConfig {
 
+        /**
+         * The Stage.
+         */
         @Setting(value = "stage")
         protected int stage;
 
+        /**
+         * The Block.
+         */
         @Setting(value = "block")
         protected String block;
 
+        /**
+         * The Fuel.
+         */
         @Nullable
         @Setting(value = "fuel")
         protected String fuel;
 
+        /**
+         * Instantiates a new Plant data config.
+         */
         public PlantDataConfig() {
         }
 
+        /**
+         * Instantiates a new Plant data config.
+         *
+         * @param block the block
+         * @param fuel  the fuel
+         * @param stage the stage
+         */
         public PlantDataConfig(String block, @Nullable String fuel, int stage) {
             this.stage = stage;
             this.block = block;
             this.fuel = fuel;
         }
 
+        /**
+         * Gets stage.
+         *
+         * @return the stage
+         */
         public int getStage() {
             return stage;
         }
 
+        /**
+         * Gets block.
+         *
+         * @return the block
+         */
         public String getBlock() {
             return block;
         }
 
+        /**
+         * Gets fuel.
+         *
+         * @return the fuel
+         */
         @Nullable
         public String getFuel() {
             return fuel;
         }
     }
 
+    /**
+     * Initialize plants map.
+     *
+     * @return the map
+     */
     public Map<String, PlantDataConfig> initializePlants() {
         return new HashMap<String, PlantDataConfig>() {{
             put("minecraft:wheat", new PlantDataConfig("minecraft:wheat", "minecraft:wheat_seeds", 7));
@@ -64,6 +112,11 @@ public class PlantsConfig {
         }};
     }
 
+    /**
+     * Gets plants.
+     *
+     * @return the plants
+     */
     public Map<String, PlantDataConfig> getPlants() {
         return plants;
     }

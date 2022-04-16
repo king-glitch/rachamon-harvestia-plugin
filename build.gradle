@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'dev.rachamon'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 
 apply plugin: 'java'
 compileJava { options.encoding = "UTF-8" }
@@ -17,7 +17,7 @@ allprojects {
 
 dependencies {
     compileOnly 'org.spongepowered:spongeapi:7.4.0'
-    implementation 'com.github.king-glitch:sponge-plugin-api:9f99b37742'
+    implementation 'com.github.king-glitch:sponge-plugin-api:6371b7e4c7'
     annotationProcessor 'org.spongepowered:spongeapi:7.4.0'
 }
 

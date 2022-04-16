@@ -41,25 +41,30 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
 
     private static RachamonHarvestia instance;
     private static boolean isInitialized = false;
+
     private Components components;
     private RachamonPluginManager pluginManager;
-    private LoggerUtil logger;
 
     @Inject
     private Game game;
+
     @Inject
     private PluginContainer container;
+
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path directory;
+
     @Inject
     private GuiceObjectMapperFactory factory;
+
     @Inject
     private Injector injector;
+
     @Inject
     private Injector pluginInjector;
 
-    private Map<String, PlantsConfig.PlantDataConfig> allPlants = new HashMap<String, PlantsConfig.PlantDataConfig>();
+    private Map<String, PlantsConfig.PlantDataConfig> allPlants = new HashMap<>();
 
     private SpongeAPIConfigFactory<RachamonHarvestia, MainConfig> config;
     private SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> plants;
@@ -71,7 +76,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
      * Instantiates a new Rachamon harvestia.
      */
     public RachamonHarvestia() {
-        super("RachamonHarvestia");
+        super("RachamonHarvestia", Sponge.getServer());
     }
 
     /**
@@ -92,8 +97,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     public void onPreInitialize(GamePreInitializationEvent event) {
         instance = this;
         this.pluginManager = new RachamonPluginManager();
-        this.setLogger(new LoggerUtil(Sponge.getServer(), false));
-        this.getLogger().info("On Pre Initialize " + RachamonHarvestia.getName() + "...");
+        this.getLogger().info("On Pre Initialize " + this.getName() + "...");
     }
 
     /**
@@ -103,7 +107,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
      */
     @Listener(order = Order.EARLY)
     public void onInitialize(GameInitializationEvent event) {
-        RachamonHarvestia.getInstance().getLogger().info("On Initialize " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getLogger().info("On Initialize " + this.getName() + "...");
         RachamonHarvestia.getInstance().getPluginManager().initialize();
     }
 
@@ -115,7 +119,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     @Listener
     public void onStart(GameStartedServerEvent event) {
         if (!this.isInitialized()) return;
-        RachamonHarvestia.getInstance().getLogger().info("On Start " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getLogger().info("On Start " + this.getName() + "...");
         RachamonHarvestia.getInstance().getPluginManager().start();
     }
 
@@ -126,22 +130,8 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
      */
     @Listener(order = Order.LAST)
     public void onPostInitialize(GamePostInitializationEvent event) {
-        RachamonHarvestia.getInstance().getLogger().info("On Post Initialize " + RachamonHarvestia.getName() + "...");
+        RachamonHarvestia.getInstance().getLogger().info("On Post Initialize " + this.getName() + "...");
         RachamonHarvestia.getInstance().getPluginManager().postInitialize();
-    }
-
-    @Override
-    public LoggerUtil getLogger() {
-        return this.logger;
-    }
-
-    /**
-     * Sets logger.
-     *
-     * @param logger the logger
-     */
-    public void setLogger(LoggerUtil logger) {
-        this.logger = logger;
     }
 
     @Override
@@ -170,7 +160,7 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
     }
 
     @Override
-    public IRachamonPluginManager getPluginManager() {
+    public RachamonPluginManager getPluginManager() {
         return this.pluginManager;
     }
 
@@ -293,18 +283,38 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
         this.language = language;
     }
 
+    /**
+     * Sets plants.
+     *
+     * @param plants the plants
+     */
     public void setPlants(PlantsConfig plants) {
         this.plants.setClazz(plants);
     }
 
+    /**
+     * Sets main plants.
+     *
+     * @param plants the plants
+     */
     public void setMainPlants(SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> plants) {
         this.plants = plants;
     }
 
+    /**
+     * Gets plants.
+     *
+     * @return the plants
+     */
     public PlantsConfig getPlants() {
         return this.plants.getRoot();
     }
 
+    /**
+     * Gets plants config.
+     *
+     * @return the plants config
+     */
     public SpongeAPIConfigFactory<RachamonHarvestia, PlantsConfig> getPlantsConfig() {
         return this.plants;
     }
@@ -360,10 +370,20 @@ public class RachamonHarvestia extends RachamonSpongePluginProvider implements I
                 .getPrefix() + message));
     }
 
+    /**
+     * Gets all plants.
+     *
+     * @return the all plants
+     */
     public Map<String, PlantsConfig.PlantDataConfig> getAllPlants() {
         return allPlants;
     }
 
+    /**
+     * Sets all plants.
+     *
+     * @param allPlants the all plants
+     */
     public void setAllPlants(Map<String, PlantsConfig.PlantDataConfig> allPlants) {
         this.allPlants = allPlants;
     }

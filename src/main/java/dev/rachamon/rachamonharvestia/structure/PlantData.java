@@ -11,12 +11,24 @@ public class PlantData extends PlantsConfig.PlantDataConfig {
 
     private boolean isFullyGrown;
 
+    /**
+     * Instantiates a new Plant data.
+     *
+     * @param block the block
+     * @param fuel  the fuel
+     * @param stage the stage
+     */
     public PlantData(String block, @Nullable String fuel, int stage) {
         super(block, fuel, stage);
         this.isFullyGrown = false;
     }
 
 
+    /**
+     * Is fully grown boolean.
+     *
+     * @return the boolean
+     */
     public boolean isFullyGrown() {
         return isFullyGrown;
     }

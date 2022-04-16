@@ -87,12 +87,23 @@ public class MainConfig {
         @Setting(comment = "blacklist block, not replant", value = "replant-block-blacklists")
         protected ArrayList<String> replantBlockBlacklists = new ArrayList<String>(Arrays.asList("minecraft:melon_block", "minecraft:pumpkin"));
 
+        /**
+         * The Need dirt collection.
+         */
         @Setting(comment = "need dirt like sugar cane plant", value = "need-dirt-collection")
         protected ArrayList<String> needDirtCollection = new ArrayList<String>(Collections.singletonList("minecraft:reeds"));
 
+        /**
+         * The Dirt collection.
+         */
         @Setting(comment = "dirt blocks to replant from need dirt plants", value = "dirt-collection")
         protected ArrayList<String> dirtCollection = new ArrayList<String>(Arrays.asList("minecraft:dirt", "minecraft:grass", "minecraft:sand"));
 
+        /**
+         * Gets dirt collection.
+         *
+         * @return the dirt collection
+         */
         public ArrayList<String> getDirtCollection() {
             return dirtCollection;
         }
@@ -160,6 +171,11 @@ public class MainConfig {
             return isAutoItemPickup;
         }
 
+        /**
+         * Gets need dirt collection.
+         *
+         * @return the need dirt collection
+         */
         public ArrayList<String> getNeedDirtCollection() {
             return needDirtCollection;
         }
